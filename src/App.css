@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Root Variables */
+:root {
+  --primary-color: #3b302f; /* Dark brownish background */
+  --secondary-color: #d4a373; /* Warm sepia tone */
+  --accent-color: #c7a27c; /* Muted beige for highlights */
+  --background-color: #1c1c1c; /* Very dark for a cinematic vibe */
+  --text-color: #f4f1de; /* Soft, off-white for readability */
+  --overlay-color: rgba(30, 27, 27, 0.5); /* Softer overlay */
+  --border-color: rgba(255, 255, 255, 0.2); /* Subtle border effect */
+  --hover-color: #e29a71; /* Warm hover effect */
+  --spacing: 1rem;
+}
+
+/* App Styling */
+.App {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  color: var(--text-color);
+
+  font-size: var(--font-size-base);
+  line-height: 1.6; /* Better readability */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+
+  /* Gradient Background Animation */
+  background: linear-gradient(135deg, #61dafb, #000000, #282c34);
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+}
+.App::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, var(--overlay-color), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+/* Hide scrollbar for WebKit-based browsers (Chrome, Safari, etc.) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+/* Hide scrollbar for WebKit-based browsers (Chrome, Safari, etc.) */
+
+/*
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+  */
