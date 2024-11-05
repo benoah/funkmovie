@@ -108,7 +108,7 @@ const PopularSeries = () => {
   );
 
   return (
-    <div className="container mx-auto px-4 pt-16">
+    <div className="container mx-auto pt-16">
       <header className="py-8 ">
         <h2 className="text-3xl md:text-4xl font-bold tracking-wide text-[#dcdccd]">
           Popular Series

@@ -91,7 +91,7 @@ const TopRatedMovies = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 pt-16">
+    <div className="container mx-auto pt-16">
       <h2 className="text-3xl font-bold tracking-wide text-[#dcdccd] mb-8">
         Top Rated Movies
       </h2>
