@@ -11,14 +11,15 @@ type FooterProps = {
 
 const Footer: React.FC<FooterProps> = ({ className = "" }) => {
   return (
-    <footer className={`bg-[#151717] text-[#dcdccd] py-10 ${className}`}>
+    <footer
+      className={`bg-opacity-10 backdrop-blur-lg border-t border-gray-700 text-[#dcdccd] py-10 ${className} mt-64`}
+    >
       <motion.div
         className="container mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        
         {/* Logo and Short Description */}
         <div className="flex flex-col items-center md:items-start space-y-4">
           <Link to="/" className="flex items-center space-x-2 text-[#ffb1b1]">
@@ -69,7 +70,9 @@ const Footer: React.FC<FooterProps> = ({ className = "" }) => {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.2, color: "#ffb1b1" }}
               className="transition-transform hover:text-[#ffb1b1]"
-              aria-label={`Visit our ${item.link.split("//")[1].split(".")[0]} page`}
+              aria-label={`Visit our ${
+                item.link.split("//")[1].split(".")[0]
+              } page`}
             >
               {item.icon}
             </motion.a>

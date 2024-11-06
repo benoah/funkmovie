@@ -1,7 +1,9 @@
+/* Import Tailwind base styles */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Reset styles */
 *,
 *::before,
 *::after {
@@ -12,6 +14,7 @@
 
 /* Root Variables */
 :root {
+  --font-size-base: clamp(16px, 1vw + 1rem, 20px); /* Responsive font size */
   --primary-color: #3b302f; /* Dark brownish background */
   --secondary-color: #d4a373; /* Warm sepia tone */
   --accent-color: #c7a27c; /* Muted beige for highlights */
@@ -20,17 +23,20 @@
   --overlay-color: rgba(30, 27, 27, 0.5); /* Softer overlay */
   --border-color: rgba(255, 255, 255, 0.2); /* Subtle border effect */
   --hover-color: #e29a71; /* Warm hover effect */
-  --spacing: 1rem;
+  --spacing: 1rem; /* Global spacing variable */
 }
 
-/* App Styling */
+/* Global Styles */
+html {
+  scroll-behavior: smooth;
+}
+
 .App {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   color: var(--text-color);
-
   font-size: var(--font-size-base);
   line-height: 1.6; /* Better readability */
   -webkit-font-smoothing: antialiased;
@@ -42,17 +48,34 @@
   background-size: 200% 200%;
   animation: gradientShift 15s ease infinite;
 }
-.App::after {
+
+.App::after,
+.App::before {
   content: "";
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, var(--overlay-color), transparent);
   pointer-events: none;
   z-index: 1;
 }
+
+.App::after {
+  background: radial-gradient(
+    circle,
+    var(--overlay-color) 20%,
+    transparent 70%
+  );
+  opacity: 0.8;
+}
+
+.App::before {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+  z-index: 2;
+}
+
+/* Gradient Background Animation */
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
@@ -64,55 +87,61 @@
     background-position: 0% 50%;
   }
 }
-/* Hide scrollbar for WebKit-based browsers (Chrome, Safari, etc.) */
+
+/* Scrollbar Styling */
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;
+  display: none; /* Hide scrollbar for WebKit browsers */
 }
 
-/* Hide scrollbar for Firefox */
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
-/* Hide scrollbar for WebKit-based browsers (Chrome, Safari, etc.) */
 
-/*
-.App {
-  text-align: center;
+.scrollbar-hide:hover::-webkit-scrollbar {
+  display: block;
+  width: 6px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.scrollbar-hide:hover::-webkit-scrollbar-thumb {
+  background: var(--hover-color);
+  border-radius: 10px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+/* Sticky Navigation Bar */
+.sticky {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+}
+
+/* Skeleton Loading Animation */
+.skeleton {
+  background: linear-gradient(90deg, #f4f1de 25%, #e0d9c5 50%, #f4f1de 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.bg-gradientShift {
+  background: linear-gradient(135deg, #61dafb, #000000, #282c34);
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
   }
-  to {
-    transform: rotate(360deg);
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
-  */

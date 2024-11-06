@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { fetchGenres, fetchTopRatedSeries } from "../../services/apiService";
+import { motion } from "framer-motion";
+import { HeartIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
 
-// Define the Series type (similar to Movie type)
 type Series = {
   id: number;
   name: string;
@@ -63,8 +64,7 @@ const TopRatedSeries = () => {
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
-        top: 0,
-        left: -Math.ceil(window.innerWidth / 1.5),
+        left: -300,
         behavior: "smooth",
       });
     }
@@ -73,43 +73,52 @@ const TopRatedSeries = () => {
   const scrollRight = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
-        top: 0,
-        left: Math.ceil(window.innerWidth / 1.5),
+        left: 300,
         behavior: "smooth",
       });
     }
   };
 
   return (
-    <div className="container mx-auto px-4 pt-16">
-      <h2 className="text-3xl font-bold tracking-wide text-[#dcdccd] mb-8">
-        Top Rated Series
-      </h2>
+    <div className="container mx-auto">
+      <header className="">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-wide text-[#dcdccd] mb-4">
+          Top Series
+        </h2>
+        <p className="ml-1 text-sm md:text-base lg:text-lg text-[#ffb1b1] leading-snug tracking-wider font-light italic mb-6">
+          "Uncover the most binge-worthy stories, handpicked for your next
+          marathon!"
+        </p>
+        <div className="flex items-center mb-8">
+          <select
+            id="genre-filter"
+            value={selectedGenreId ?? ""}
+            onChange={(e) =>
+              setSelectedGenreId(
+                e.target.value ? parseInt(e.target.value) : null
+              )
+            }
+            className="py-2 px-4 text-sm rounded-md bg-[#151717]/70 text-[#ffb1b1] border border-[#ffffff30] cursor-pointer transition-all"
+            style={{
+              minWidth: "8rem",
+              backgroundImage:
+                "url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27 fill=%27%23ffb1b1%27%3E%3Cpath d=%27M1 4l7 7 7-7z%27/%3E%3C/svg%3E')",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 10px center",
+              backgroundSize: "1.5em",
+              appearance: "none",
+            }}
+          >
+            <option value="">All Genres</option>
+            {genres.map((genre) => (
+              <option key={genre.id} value={genre.id}>
+                {genre.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </header>
 
-      <div className="flex items-center space-x-2 mb-8 mt-8">
-        <select
-          id="genre-filter"
-          value={selectedGenreId ?? ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            setSelectedGenreId(value ? parseInt(value) : null);
-          }}
-          className="px-3 py-1 text-sm bg-[#151717]/70 text-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ffb1b1] transition-all cursor-pointer pr-8 backdrop-blur-lg border border-[#ffffff30] hover:text-white shadow-md"
-          style={{
-            minWidth: "8rem",
-            marginTop: "-0.5rem",
-          }}
-        >
-          <option value="" className="text-gray-400">
-            All Genres
-          </option>
-          {genres.map((genre) => (
-            <option key={genre.id} value={genre.id} className="text-gray-400">
-              <li>{genre.name} </li>
-            </option>
-          ))}
-        </select>
-      </div>
       <div className="relative text-white">
         {series.length > 5 && (
           <>
@@ -166,9 +175,6 @@ const TopRatedSeries = () => {
                   className="snap-center shrink-0 w-[240px] md:w-[280px] lg:w-[320px] animate-pulse"
                 >
                   <div className="bg-gray-700 h-[360px] w-full rounded-md"></div>
-                  <div className="mt-2 h-6 bg-gray-700 rounded w-3/4"></div>
-                  <div className="mt-2 h-4 bg-gray-700 rounded w-1/2"></div>
-                  <div className="mt-2 h-4 bg-gray-700 rounded w-1/4"></div>
                 </div>
               ))
             : series
@@ -195,10 +201,10 @@ const TopRatedSeries = () => {
                         className="w-full h-auto object-cover rounded-md transition-transform duration-300 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-end opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-md p-4 space-y-2">
-                        <h3 className="text-lg font-semibold text-[#dcdccd] leading-tight">
+                        <h3 className="text-lg md:text-xl font-bold text-[#ffb1b1] leading-tight shadow-md mb-2">
                           {serie.name}
                         </h3>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-gray-400 mb-1">
                           {new Date(serie.first_air_date).toLocaleDateString(
                             "no-NO",
                             {
@@ -208,10 +214,10 @@ const TopRatedSeries = () => {
                             }
                           )}
                         </p>
-                        <p className="text-xs text-[#ffb1b1]">
+                        <p className="text-xs text-[#ffb1b1] mb-1">
                           ⭐ {serie.vote_average.toFixed(1)} / 10
                         </p>
-                        <p className="text-xs text-gray-300 leading-snug">
+                        <p className="text-xs text-gray-300 leading-snug mb-1">
                           Genres:{" "}
                           <span className="font-semibold text-gray-200">
                             {serie.genre_ids
@@ -220,6 +226,30 @@ const TopRatedSeries = () => {
                               .join(", ")}
                           </span>
                         </p>
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="flex items-center space-x-4 mt-4"
+                        >
+                          <p className="flex items-center text-gray-200 text-sm leading-snug cursor-pointer hover:text-[#ffb1b1] transition-colors duration-200">
+                            <HeartIcon
+                              className="h-5 w-5 text-[#ffb1b1] mr-1"
+                              aria-hidden="true"
+                            />
+                            <span className="hover:text-[#ffb1b1]">Like</span>
+                          </p>
+
+                          <p className="flex items-center text-gray-200 text-sm leading-snug cursor-pointer hover:text-[#ffb1b1] transition-colors duration-200">
+                            <PlayCircleIcon
+                              className="h-5 w-5 text-[#ffb1b1] mr-1"
+                              aria-hidden="true"
+                            />
+                            <span className="hover:text-[#ffb1b1]">
+                              Watch Trailer
+                            </span>
+                          </p>
+                        </motion.div>
                       </div>
                     </div>
                   </div>

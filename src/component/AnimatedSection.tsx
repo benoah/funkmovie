@@ -7,19 +7,27 @@ interface AnimatedSectionProps {
   delay?: number;
   duration?: number;
   y?: number;
+  className?: string;
 }
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0 },
+};
 
 const AnimatedSection: React.FC<AnimatedSectionProps> = ({
   children,
   delay = 0.1,
   duration = 0.6,
   y = 30,
+  className = "",
 }) => (
   <motion.div
-    initial={{ opacity: 0, y }}
-    animate={{ opacity: 1, y: 0 }}
+    initial="hidden"
+    animate="visible"
+    variants={fadeInUp}
     transition={{ delay, duration }}
-    className="space-y-4"
+    className={`space-y-4 ${className}`}
   >
     {children}
   </motion.div>

@@ -1,5 +1,3 @@
-// Trending.tsx
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { fetchGenres, fetchTrendingMovies } from "../services/apiService";
 import { motion } from "framer-motion";
@@ -25,8 +23,11 @@ type Genre = {
   name: string;
 };
 
-const Trending = () => {
-  // State to store movies, selected movie, and genre data
+interface TrendingProps {
+  className?: string;
+}
+
+const Trending: React.FC<TrendingProps> = ({ className }) => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [autoPlay, setAutoPlay] = useState<boolean>(false);
@@ -34,11 +35,12 @@ const Trending = () => {
   const [error, setError] = useState<string | null>(null);
   const [timeWindow, setTimeWindow] = useState<"day" | "week">("week");
   const [genres, setGenres] = useState<Genre[]>([]);
+  const [likedMovies, setLikedMovies] = useState<Set<number>>(new Set());
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Fetch genres when the component mounts
+  // Fetch genres only once on mount
   useEffect(() => {
-    const getGenres = async () => {
+    const fetchGenresData = async () => {
       try {
         const genresData = await fetchGenres();
         setGenres(genresData);
@@ -47,17 +49,16 @@ const Trending = () => {
         setError("Failed to fetch genres.");
       }
     };
-    getGenres();
+    fetchGenresData();
   }, []);
 
-  // Function to fetch trending movies based on timeWindow (day/week)
+  // Fetch trending movies based on selected time window
   const getMovies = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await fetchTrendingMovies(timeWindow);
 
-      // Transform the data to match the Movie type
       const moviesData: Movie[] = data.results.map((item: TrendingItem) => ({
         id: item.id,
         title: item.title || item.name || "Untitled",
@@ -80,78 +81,82 @@ const Trending = () => {
     }
   }, [timeWindow]);
 
-  // Re-fetch movies when the timeWindow changes
   useEffect(() => {
     getMovies();
   }, [timeWindow, getMovies]);
 
-  // Scroll functions for the carousel
+  // Toggle movie like status
+  const toggleLike = (movieId: number) => {
+    setLikedMovies((prevLikedMovies) => {
+      const updatedLikes = new Set(prevLikedMovies);
+      updatedLikes.has(movieId)
+        ? updatedLikes.delete(movieId)
+        : updatedLikes.add(movieId);
+      return updatedLikes;
+    });
+  };
+
+  // Scroll functions for horizontal scrolling
   const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        top: 0,
-        left: -Math.ceil(window.innerWidth / 1.5),
-        behavior: "smooth",
-      });
-    }
+    scrollContainerRef.current?.scrollBy({
+      top: 0,
+      left: -Math.ceil(window.innerWidth / 1.5),
+      behavior: "smooth",
+    });
   };
 
   const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        top: 0,
-        left: Math.ceil(window.innerWidth / 1.5),
-        behavior: "smooth",
-      });
-    }
+    scrollContainerRef.current?.scrollBy({
+      top: 0,
+      left: Math.ceil(window.innerWidth / 1.5),
+      behavior: "smooth",
+    });
   };
 
-  // Functions for opening and closing the modal
+  // Modal handling
   const openModal = (movie: Movie, autoPlay = false) => {
     setSelectedMovie(movie);
     setAutoPlay(autoPlay);
   };
+
   const closeModal = () => {
     setSelectedMovie(null);
     setAutoPlay(false);
   };
 
-  // Map genres for quick lookup based on genre IDs
   const genreMap = genres.reduce((acc, genre) => {
     acc[genre.id] = genre.name;
     return acc;
   }, {} as { [key: number]: string });
 
   return (
-    <div className="container pt-0">
-      <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide text-[#dcdccd] mb-6">
-        Trending Now
-      </h2>
-      <div className="flex space-x-2 mb-8">
-        <button
-          className={`py-1 px-2 text-sm transition-all ${
-            timeWindow === "day"
-              ? "border-b-2 border-[#ffb1b1] font-semibold"
-              : "border-b-2 border-transparent text-gray-400 hover:text-white"
-          }`}
-          onClick={() => setTimeWindow("day")}
-          aria-label="Show today's trending movies"
-        >
-          Today
-        </button>
-        <button
-          className={`px-4 py-1 text-sm transition-all ${
-            timeWindow === "week"
-              ? "border-b-2 border-[#ffb1b1] text-white font-semibold"
-              : "border-b-2 border-transparent text-gray-400 hover:text-white"
-          }`}
-          onClick={() => setTimeWindow("week")}
-          aria-label="Show this week's trending movies"
-        >
-          This Week
-        </button>
+    <div className="relative w-full ">
+      <header className="py-8">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-wide text-[#dcdccd] mb-2">
+          Trending Now
+        </h2>
+        <p className="ml-1 text-sm md:text-base lg:text-lg text-[#ffb1b1] leading-snug tracking-wider font-light italic ">
+          "Stay in the Loop with the Latest Hits"
+        </p>
+      </header>
+      <div className="flex space-x-4 mb-4">
+        {["day", "week"].map((window) => (
+          <button
+            key={window}
+            onClick={() => setTimeWindow(window as "day" | "week")}
+            className={`py-2 px-4 text-sm transition-all rounded-md ${
+              timeWindow === window
+                ? "border-b-2 border-[#ffb1b1] font-semibold text-[#ffb1b1] bg-[#ffb1b1]/20"
+                : "border-b-2 border-transparent text-gray-400 hover:text-white"
+            }`}
+            aria-label={`Show ${
+              window === "day" ? "today's" : "this week's"
+            } trending movies`}
+          >
+            {window === "day" ? "Today" : "This Week"}
+          </button>
+        ))}
       </div>
-
       {error && (
         <div className="text-center text-red-500 mb-4">
           <p>{error}</p>
@@ -163,19 +168,13 @@ const Trending = () => {
           </button>
         </div>
       )}
-
       <div className="relative group">
         <button
           onClick={scrollLeft}
           aria-label="Scroll Left"
           className="absolute top-1/2 left-2 z-10 -translate-y-1/2 opacity-70 hover:opacity-100 transition-opacity bg-black/50 rounded-full p-2"
         >
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-6 h-6 text-white" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -184,18 +183,12 @@ const Trending = () => {
             />
           </svg>
         </button>
-
         <button
           onClick={scrollRight}
           aria-label="Scroll Right"
           className="absolute top-1/2 right-2 z-10 -translate-y-1/2 opacity-70 hover:opacity-100 transition-opacity bg-black/50 rounded-full p-2"
         >
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-6 h-6 text-white" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -204,11 +197,9 @@ const Trending = () => {
             />
           </svg>
         </button>
-
         <div
           ref={scrollContainerRef}
           className="flex overflow-x-scroll space-x-4 py-4 scroll-smooth scrollbar-hide"
-          aria-live="polite"
         >
           {loading
             ? Array.from({ length: 8 }).map((_, index) => (
@@ -229,13 +220,12 @@ const Trending = () => {
                 >
                   <img
                     src={
-                      movie.poster_path
-                        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                        : "https://via.placeholder.com/500x750?text=No+Image"
+                      `https://image.tmdb.org/t/p/w500${movie.poster_path}` ||
+                      "https://via.placeholder.com/500x750?text=No+Image"
                     }
                     alt={`Poster of ${movie.title}`}
-                    loading="lazy"
                     className="w-full h-auto object-cover rounded-md"
+                    loading="lazy"
                   />
                   <button
                     onClick={() => openModal(movie, true)}
@@ -253,14 +243,15 @@ const Trending = () => {
                 </div>
               ))}
         </div>
-
-        {/* MovieModal component for displaying selected movie details */}
         {selectedMovie && (
           <MovieModal
             movie={selectedMovie}
             open={true}
             onClose={closeModal}
             autoPlay={autoPlay}
+            genres={genres}
+            likedMovies={likedMovies}
+            toggleLike={toggleLike}
           />
         )}
       </div>
